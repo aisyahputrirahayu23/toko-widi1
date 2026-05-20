@@ -1,67 +1,138 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FcGoogle } from 'react-icons/fc';
+import logo from "../../assets/logoo.png";
+import { FcGoogle } from "react-icons/fc";
 
 export default function Login() {
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    // Dummy Login
+    localStorage.setItem("isLogin", "true");
+
+    // Redirect ke dashboard
+    navigate("/dashboard");
+  };
+
   return (
-    <>
-      <div className="text-center w-full">
-        <h2 className="text-3xl font-bold text-slate-800">Log in to your account</h2>
-        <p className="text-slate-500 mt-2 mb-8 text-sm">Welcome back! Please enter your details.</p>
+    <div className="min-h-screen flex bg-[#f5f1eb]">
+      {/* LEFT SIDE */}
+      <div className="hidden lg:flex w-1/2 items-center justify-center bg-[#f3eee7]">
+        <div className="text-center max-w-xl">
+          {/* LOGO */}
+          <img
+            src={logo}
+            alt="Logo"
+            className="w-[380px] mx-auto drop-shadow-md"
+          />
+
+          {/* BRAND */}
+          <h1 className="mt-8 text-6xl font-extrabold tracking-tight text-[#4B2E19]">
+            Toko Widi
+          </h1>
+
+          {/* LINE */}
+          <div className="w-24 h-1 bg-[#8B4513] mx-auto rounded-full mt-5"></div>
+
+          {/* SUBTITLE */}
+          <p className="mt-6 text-2xl text-[#7A624B] leading-relaxed font-medium">
+            Sistem Manajemen Toko Oleh-oleh
+            <br />
+            Modern dan Efisien
+          </p>
+        </div>
       </div>
 
-      <form className="w-full space-y-5">
-        {/* Input Email */}
-        <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-slate-700">Email</label>
-          <input 
-            type="email" 
-            placeholder="Enter your email"
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-500 transition-all text-sm"
-          />
+      {/* RIGHT SIDE */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-6">
+        <div className="w-full max-w-lg bg-white p-12 rounded-[35px] shadow-2xl">
+          {/* HEADER */}
+          <div className="mb-8">
+            <h2 className="text-5xl font-bold text-[#3E2C1C] leading-tight">
+              Welcome <br /> Back 👋
+            </h2>
+
+            <p className="text-gray-500 mt-4 text-lg">
+              Login untuk melanjutkan
+            </p>
+          </div>
+
+          {/* FORM */}
+          <form onSubmit={handleLogin} className="space-y-6">
+            {/* EMAIL */}
+            <div>
+              <label className="block mb-2 text-sm font-semibold text-slate-700">
+                Email
+              </label>
+
+              <input
+                type="email"
+                placeholder="Masukkan email"
+                className="w-full px-5 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-[#8B4513] text-base"
+                required
+              />
+            </div>
+
+            {/* PASSWORD */}
+            <div>
+              <label className="block mb-2 text-sm font-semibold text-slate-700">
+                Password
+              </label>
+
+              <input
+                type="password"
+                placeholder="••••••••"
+                className="w-full px-5 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-[#8B4513] text-base"
+                required
+              />
+            </div>
+
+            {/* OPTIONS */}
+            <div className="flex items-center justify-between text-sm">
+              <label className="flex items-center gap-2 cursor-pointer text-slate-600">
+                <input type="checkbox" />
+                Remember me
+              </label>
+
+              <a
+                href="/forgot"
+                className="font-semibold text-[#8B4513] hover:underline"
+              >
+                Forgot password
+              </a>
+            </div>
+
+            {/* SIGN IN */}
+            <button
+              type="submit"
+              className="w-full py-4 bg-[#8B4513] hover:bg-[#6f360d] text-white font-semibold rounded-2xl transition-all duration-300 text-lg"
+            >
+              Sign in
+            </button>
+
+            {/* GOOGLE */}
+            <button
+              type="button"
+              className="w-full flex items-center justify-center gap-3 py-4 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold rounded-2xl transition-all text-base"
+            >
+              <FcGoogle className="text-2xl" />
+              Sign in with Google
+            </button>
+          </form>
+
+          {/* FOOTER */}
+          <p className="mt-8 text-base text-slate-500 text-center">
+            Don't have an account?{" "}
+            <a
+              href="/register"
+              className="font-bold text-[#8B4513] hover:underline"
+            >
+              Sign up
+            </a>
+          </p>
         </div>
-
-        {/* Input Password */}
-        <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-slate-700">Password</label>
-          <input 
-            type="password" 
-            placeholder="••••••••"
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-orange-500 transition-all text-sm"
-          />
-        </div>
-
-        {/* Remember & Forgot */}
-        <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500" />
-            <span className="text-xs text-slate-600">Remember for 30 days</span>
-          </label>
-          <a href="/forgot" className="text-xs font-semibold text-orange-900 hover:underline">Forgot password</a>
-        </div>
-
-        {/* Submit Button - Pakai warna amber/orange yang tersedia di Tailwind */}
-        <button 
-          type="submit" 
-          className="w-full py-3 bg-amber-900 hover:bg-amber-950 text-white font-semibold rounded-xl shadow-sm transition-colors text-sm"
-        >
-          Sign in
-        </button>
-
-        {/* Google Button */}
-        <button 
-          type="button" 
-          className="w-full flex items-center justify-center gap-3 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold rounded-xl transition-all text-sm"
-        >
-          <FcGoogle className="text-xl" />
-          Sign in with Google
-        </button>
-      </form>
-
-      {/* Footer Link */}
-      <p className="mt-8 text-sm text-slate-500">
-        Don't have an account? <a href="/register" className="font-bold text-orange-900 hover:underline">Sign up</a>
-      </p>
-    </>
+      </div>
+    </div>
   );
 }
