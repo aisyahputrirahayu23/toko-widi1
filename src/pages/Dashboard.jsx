@@ -4,6 +4,7 @@ import {
   MdOutlineShoppingCart,
   MdOutlinePeopleAlt,
 } from "react-icons/md";
+import PageHeader from "../components/PageHeader";
 
 export default function Dashboard() {
   const stats = [
@@ -34,9 +35,7 @@ export default function Dashboard() {
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-[#3E2C1C]">Dashboard</h1>
-
-          <p className="text-gray-500 mt-2">Welcome back, Admin Toko Widi 👋</p>
+          <PageHeader />
         </div>
 
         {/* PROFILE */}

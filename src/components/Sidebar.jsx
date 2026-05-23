@@ -80,25 +80,12 @@ export default function Sidebar() {
           </li>
 
           <li>
-            <NavLink to="/suppliers" className={menuClass}>
-              <MdOutlinePeopleAlt className="mr-3 text-xl" />
-              Suppliers
-            </NavLink>
-          </li>
-
-          <li>
             <NavLink to="/orders" className={menuClass}>
               <MdOutlineReceiptLong className="mr-3 text-xl" />
               Orders
             </NavLink>
           </li>
 
-          <li>
-            <NavLink to="/manage-store" className={menuClass}>
-              <MdOutlineStorefront className="mr-3 text-xl" />
-              Manage Store
-            </NavLink>
-          </li>
         </ul>
       </div>
 
