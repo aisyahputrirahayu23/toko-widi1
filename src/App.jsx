@@ -14,12 +14,8 @@ const Dashboard = React.lazy(() => import("./pages/Dashboard"));
 const Inventory = React.lazy(() => import("./pages/Inventory"));
 // import Reports from "./pages/Reports";
 const Reports = React.lazy(() => import("./pages/Reports"));
-// import Suppliers from "./pages/Suppliers";
-const Suppliers = React.lazy(() => import("./pages/Suppliers"));
 // import Orders from "./pages/Orders";
 const Orders = React.lazy(() => import("./pages/Orders"));
-// import ManageStore from "./pages/ManageStore";
-const ManageStore = React.lazy(() => import("./pages/ManageStore"));
 // import Settings from "./pages/Settings";
 const Settings = React.lazy(() => import("./pages/Settings"));
 
@@ -40,9 +36,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/reports" element={<Reports />} />
-          <Route path="/suppliers" element={<Suppliers />} />
           <Route path="/orders" element={<Orders />} />
-          <Route path="/manage-store" element={<ManageStore />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
 
