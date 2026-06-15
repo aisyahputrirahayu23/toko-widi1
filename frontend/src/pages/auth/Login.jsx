@@ -52,10 +52,6 @@ export default function Login() {
             <h2 className="text-5xl font-bold text-[#3E2C1C] leading-tight">
               Welcome <br /> Back 👋
             </h2>
-
-            <p className="text-gray-500 mt-4 text-lg">
-              Login untuk melanjutkan
-            </p>
           </div>
 
           {/* FORM */}
@@ -109,15 +105,6 @@ export default function Login() {
               className="w-full py-4 bg-[#8B4513] hover:bg-[#6f360d] text-white font-semibold rounded-2xl transition-all duration-300 text-lg"
             >
               Sign in
-            </button>
-
-            {/* GOOGLE */}
-            <button
-              type="button"
-              className="w-full flex items-center justify-center gap-3 py-4 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold rounded-2xl transition-all text-base"
-            >
-              <FcGoogle className="text-2xl" />
-              Sign in with Google
             </button>
           </form>
 

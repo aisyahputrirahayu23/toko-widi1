@@ -89,33 +89,12 @@ export default function Register() {
           />
         </div>
 
-        {/* Agree Terms */}
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input 
-            type="checkbox" 
-            name="agreeTerms"
-            checked={formData.agreeTerms}
-            onChange={handleChange}
-            className="w-4 h-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500" 
-          />
-          <span className="text-xs text-slate-600">I agree to the <a href="#" className="font-semibold text-orange-900 hover:underline">Terms & Conditions</a></span>
-        </label>
-
         {/* Submit Button */}
         <button 
           type="submit" 
           className="w-full py-3 bg-amber-900 hover:bg-amber-950 text-white font-semibold rounded-xl shadow-sm transition-colors text-sm"
         >
           Create Account
-        </button>
-
-        {/* Google Button */}
-        <button 
-          type="button" 
-          className="w-full flex items-center justify-center gap-3 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold rounded-xl transition-all text-sm"
-        >
-          <FcGoogle className="text-xl" />
-          Sign up with Google
         </button>
       </form>
 
