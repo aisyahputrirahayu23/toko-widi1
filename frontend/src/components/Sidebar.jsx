@@ -1,17 +1,16 @@
 import { NavLink, useNavigate } from "react-router-dom";
-
 import {
   MdOutlineDashboard,
   MdOutlineInventory2,
   MdOutlineBarChart,
-  MdOutlinePeopleAlt,
   MdOutlineReceiptLong,
-  MdOutlineStorefront,
+  MdOutlineLocalShipping,
+  MdOutlinePeopleAlt,
   MdOutlineSettings,
   MdOutlineLogout,
 } from "react-icons/md";
-
 import logo from "../assets/logoo.png";
+import { useAuth } from "../context/AuthContext";
 
 const menuClass = ({ isActive }) =>
   `flex items-center px-5 py-3 mx-4 rounded-xl transition-all duration-300 text-sm ${
@@ -22,35 +21,29 @@ const menuClass = ({ isActive }) =>
 
 export default function Sidebar() {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
-  // HANDLE LOGOUT
-  const handleLogout = () => {
-    localStorage.removeItem("isLogin");
-
+  const handleLogout = async () => {
+    await logout();
     navigate("/");
   };
+
+  const isAdmin = user?.role === "admin";
+  const isKaryawan = user?.role === "karyawan";
 
   return (
     <div className="flex min-h-screen w-72 flex-col bg-white border-r border-gray-200 shadow-sm">
       {/* LOGO */}
       <div className="px-6 py-8 border-b border-gray-100">
         <div className="flex items-center gap-3">
-          {/* ICON LOGO */}
           <div className="w-11 h-11 rounded-full bg-[#8B4513] flex items-center justify-center shadow-md">
-            <img
-              src={logo}
-              alt="Toko Widi"
-              className="w-7 h-7 object-contain"
-            />
+            <img src={logo} alt="Toko Widi" className="w-7 h-7 object-contain" />
           </div>
-
-          {/* TEXT */}
           <div>
-            <h1 className="text-xl font-bold text-[#4B2E19] leading-none">
-              Toko Widi
-            </h1>
-
-            <p className="text-xs text-gray-500 mt-1">Store Management</p>
+            <h1 className="text-xl font-bold text-[#4B2E19] leading-none">Toko Widi</h1>
+            <p className="text-xs text-gray-500 mt-1">
+              {isAdmin ? "Administrator" : "Karyawan"}
+            </p>
           </div>
         </div>
       </div>
@@ -65,27 +58,65 @@ export default function Sidebar() {
             </NavLink>
           </li>
 
-          <li>
-            <NavLink to="/inventory" className={menuClass}>
-              <MdOutlineInventory2 className="mr-3 text-xl" />
-              Inventory
-            </NavLink>
-          </li>
+          {/* Admin: read-only inventory */}
+          {isAdmin && (
+            <li>
+              <NavLink to="/inventory" className={menuClass}>
+                <MdOutlineInventory2 className="mr-3 text-xl" />
+                Inventory
+              </NavLink>
+            </li>
+          )}
 
-          <li>
-            <NavLink to="/reports" className={menuClass}>
-              <MdOutlineBarChart className="mr-3 text-xl" />
-              Reports
-            </NavLink>
-          </li>
+          {/* Admin: reports */}
+          {isAdmin && (
+            <li>
+              <NavLink to="/reports" className={menuClass}>
+                <MdOutlineBarChart className="mr-3 text-xl" />
+                Reports
+              </NavLink>
+            </li>
+          )}
 
-          <li>
-            <NavLink to="/orders" className={menuClass}>
-              <MdOutlineReceiptLong className="mr-3 text-xl" />
-              Orders
-            </NavLink>
-          </li>
+          {/* Admin: kelola user */}
+          {isAdmin && (
+            <li>
+              <NavLink to="/users" className={menuClass}>
+                <MdOutlinePeopleAlt className="mr-3 text-xl" />
+                Kelola User
+              </NavLink>
+            </li>
+          )}
 
+          {/* Karyawan: inventory dengan CRUD */}
+          {isKaryawan && (
+            <li>
+              <NavLink to="/inventory" className={menuClass}>
+                <MdOutlineInventory2 className="mr-3 text-xl" />
+                Inventory
+              </NavLink>
+            </li>
+          )}
+
+          {/* Karyawan: supplier */}
+          {isKaryawan && (
+            <li>
+              <NavLink to="/suppliers" className={menuClass}>
+                <MdOutlineLocalShipping className="mr-3 text-xl" />
+                Supplier
+              </NavLink>
+            </li>
+          )}
+
+          {/* Karyawan: transaksi */}
+          {isKaryawan && (
+            <li>
+              <NavLink to="/transactions" className={menuClass}>
+                <MdOutlineReceiptLong className="mr-3 text-xl" />
+                Transaksi
+              </NavLink>
+            </li>
+          )}
         </ul>
       </div>
 
@@ -98,7 +129,6 @@ export default function Sidebar() {
               Settings
             </NavLink>
           </li>
-
           <li>
             <button
               onClick={handleLogout}

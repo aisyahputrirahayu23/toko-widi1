@@ -1,104 +1,36 @@
-export default function PageHeader() {
-    return (
-    <>
-        {location.pathname === "/dashboard" && (
-        <div id="pageheader-container" className="flex items-center justify-between p-4">
-            <div id="pageheader-left" className="flex flex-col">
-                <span id="page-title" className="text-3xl font-semibold">
-                    Dashboard
-                </span>
-                <div id="breadcrumb-links" className="flex items-center font-medium space-x-2 mt-2">
-                    <span id="breadcrumb-home" className="text-gray-500">Dashboard</span>
-                    <span id="breadcrumb-separator" className="text-gray-500">Welcome back, Admin Toko Widi 👋</span>
-                </div>
-            </div>
-        </div>
-    )}
+import { useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-        {location.pathname === "/inventory" && (
-            <div id="pageheader-container" className="flex items-center justify-between p-4">
-            <div id="pageheader-left" className="flex flex-col">
-                <span id="page-title" className="text-3xl font-semibold">
-                    Inventory
-                </span>
-                <div id="breadcrumb-links" className="flex items-center font-medium space-x-2 mt-2">
-                    <span id="breadcrumb-home" className="text-gray-500"></span>
-                    <span id="breadcrumb-separator" className="text-gray-500">/</span>
-                    <span id="breadcrumb-current" className="text-gray-500"></span>
-                </div>
-            </div>
+const pages = {
+  "/dashboard":    { title: "Dashboard",     subtitle: null },
+  "/inventory":    { title: "Inventory",     subtitle: null },
+  "/reports":      { title: "Reports",       subtitle: null },
+  "/transactions": { title: "Transaksi",     subtitle: null },
+  "/users":        { title: "Kelola User",   subtitle: null },
+  "/suppliers":    { title: "Supplier",      subtitle: null },
+  "/orders":       { title: "Orders",        subtitle: null },
+  "/settings":     { title: "Settings",      subtitle: null },
+};
+
+export default function PageHeader() {
+  const { pathname } = useLocation();
+  const { user } = useAuth();
+  const page = pages[pathname];
+
+  if (!page) return null;
+
+  return (
+    <div className="flex items-center justify-between p-4">
+      <div className="flex flex-col">
+        <span className="text-3xl font-semibold">{page.title}</span>
+        <div className="flex items-center font-medium space-x-2 mt-2">
+          {pathname === "/dashboard" ? (
+            <span className="text-gray-500">Welcome back, {user?.name ?? "Admin"} 👋</span>
+          ) : (
+            <span className="text-gray-500">Toko Widi / {page.title}</span>
+          )}
         </div>
-    )}
-        {location.pathname === "/reports" && (
-            <div id="pageheader-container" className="flex items-center justify-between p-4">
-                <div id="pageheader-left" className="flex flex-col">
-                    <span id="page-title" className="text-3xl font-semibold">
-                        Reports
-                    </span>
-                    <div id="breadcrumb-links" className="flex items-center font-medium space-x-2 mt-2">
-                        <span id="breadcrumb-home" className="text-gray-500"></span>
-                        <span id="breadcrumb-separator" className="text-gray-500">/</span>
-                        <span id="breadcrumb-current" className="text-gray-500"></span>
-                    </div>
-                </div>
-            </div>    
-    )}
-        {location.pathname === "/suppliers" && (
-            <div id="pageheader-container" className="flex items-center justify-between p-4">
-            <div id="pageheader-left" className="flex flex-col">
-                <span id="page-title" className="text-3xl font-semibold">
-                    Suppliers
-                </span>
-                <div id="breadcrumb-links" className="flex items-center font-medium space-x-2 mt-2">
-                    <span id="breadcrumb-home" className="text-gray-500"></span>
-                    <span id="breadcrumb-separator" className="text-gray-500">/</span>
-                    <span id="breadcrumb-current" className="text-gray-500"></span>
-                </div>
-            </div>
-        </div>
-    )}
-        {location.pathname === "/orders" && (
-            <div id="pageheader-container" className="flex items-center justify-between p-4">
-            <div id="pageheader-left" className="flex flex-col">
-                <span id="page-title" className="text-3xl font-semibold">
-                    Orders
-                </span>
-                <div id="breadcrumb-links" className="flex items-center font-medium space-x-2 mt-2">
-                    <span id="breadcrumb-home" className="text-gray-500"></span>
-                    <span id="breadcrumb-separator" className="text-gray-500">/</span>
-                    <span id="breadcrumb-current" className="text-gray-500"></span>
-                </div>
-            </div>
-        </div>
-    )}
-        {location.pathname === "/manage-store" && (
-            <div id="pageheader-container" className="flex items-center justify-between p-4">
-            <div id="pageheader-left" className="flex flex-col">
-                <span id="page-title" className="text-3xl font-semibold">
-                    Manage Store
-                </span>
-                <div id="breadcrumb-links" className="flex items-center font-medium space-x-2 mt-2">
-                    <span id="breadcrumb-home" className="text-gray-500"></span>
-                    <span id="breadcrumb-separator" className="text-gray-500">/</span>
-                    <span id="breadcrumb-current" className="text-gray-500"></span>
-                </div>
-            </div>
-        </div>
-    )}
-        {location.pathname === "/settings" && (
-            <div id="pageheader-container" className="flex items-center justify-between p-4">
-            <div id="pageheader-left" className="flex flex-col">
-                <span id="page-title" className="text-3xl font-semibold">
-                    Settings
-                </span>
-                <div id="breadcrumb-links" className="flex items-center font-medium space-x-2 mt-2">
-                    <span id="breadcrumb-home" className="text-gray-500"></span>
-                    <span id="breadcrumb-separator" className="text-gray-500">/</span>
-                    <span id="breadcrumb-current" className="text-gray-500"></span>
-                </div>
-            </div>
-        </div>    
-        )}
-    </>
-    );
+      </div>
+    </div>
+  );
 }

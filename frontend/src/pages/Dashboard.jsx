@@ -10,22 +10,22 @@ export default function Dashboard() {
   const stats = [
     {
       title: "Total Products",
-      value: "1,240",
+      value: "0",
       icon: <MdOutlineInventory2 />,
     },
     {
       title: "Revenue",
-      value: "Rp 12.5M",
+      value: "Rp 0",
       icon: <MdOutlineAttachMoney />,
     },
     {
       title: "Orders",
-      value: "320",
+      value: "0",
       icon: <MdOutlineShoppingCart />,
     },
     {
-      title: "Suppliers",
-      value: "45",
+      title: "Expired Products",
+      value: "0",
       icon: <MdOutlinePeopleAlt />,
     },
   ];
