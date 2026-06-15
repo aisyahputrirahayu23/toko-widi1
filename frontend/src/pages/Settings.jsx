@@ -3,7 +3,6 @@ import {
   MdOutlinePerson,
   MdOutlineLock,
   MdOutlineStore,
-  MdOutlineNotifications,
   MdOutlineVisibility,
   MdOutlineVisibilityOff,
   MdOutlineCheckCircle,
@@ -82,6 +81,20 @@ function SaveButton({ onClick, saved }) {
   );
 }
 
+const compressImage = (dataUrl, maxSize = 200, quality = 0.75) =>
+  new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.src = dataUrl;
+  });
+
 // ─── PROFIL AKUN ────────────────────────────────────────────────────────────
 function ProfilSection({ user }) {
   const { foto, setFotoUser } = useAuth();
@@ -94,7 +107,10 @@ function ProfilSection({ user }) {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => setPendingFoto(ev.target.result);
+    reader.onload = async (ev) => {
+      const compressed = await compressImage(ev.target.result);
+      setPendingFoto(compressed);
+    };
     reader.readAsDataURL(file);
   };
 
@@ -297,67 +313,10 @@ function PengaturanTokoSection() {
   );
 }
 
-// ─── NOTIFIKASI (karyawan only) ─────────────────────────────────────────────
-function NotifikasiSection() {
-  const [prefs, setPrefs] = useState({
-    stokRendah: true,
-    transaksiMasuk: true,
-    pesananBaru: false,
-    laporanHarian: false,
-  });
-  const [saved, setSaved] = useState(false);
-
-  const toggle = (key) => setPrefs((p) => ({ ...p, [key]: !p[key] }));
-
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
-  };
-
-  const items = [
-    { key: "stokRendah", label: "Peringatan stok rendah", desc: "Notifikasi ketika stok produk hampir habis" },
-    { key: "transaksiMasuk", label: "Transaksi masuk", desc: "Notifikasi setiap ada transaksi baru" },
-    { key: "pesananBaru", label: "Pesanan baru", desc: "Notifikasi ketika ada pesanan masuk" },
-    { key: "laporanHarian", label: "Laporan harian", desc: "Ringkasan aktivitas toko setiap hari" },
-  ];
-
-  return (
-    <SectionCard icon={<MdOutlineNotifications />} title="Preferensi Notifikasi">
-      <div className="space-y-4">
-        {items.map(({ key, label, desc }) => (
-          <div key={key} className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0">
-            <div>
-              <p className="text-sm font-semibold text-[#3E2C1C]">{label}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
-            </div>
-            <button
-              onClick={() => toggle(key)}
-              className={`relative w-11 h-6 rounded-full transition-all duration-300 ${
-                prefs[key] ? "bg-[#8B4513]" : "bg-gray-200"
-              }`}
-            >
-              <span
-                className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-all duration-300 ${
-                  prefs[key] ? "translate-x-5" : "translate-x-0"
-                }`}
-              />
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-5">
-        <SaveButton onClick={handleSave} saved={saved} />
-      </div>
-    </SectionCard>
-  );
-}
-
 // ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 export default function Settings() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
-  const isKaryawan = user?.role === "karyawan";
 
   return (
     <div id="settings-page" className="space-y-6">
@@ -367,8 +326,6 @@ export default function Settings() {
       <KeamananSection />
 
       {isAdmin && <PengaturanTokoSection />}
-
-      {isKaryawan && <NotifikasiSection />}
     </div>
   );
 }

@@ -5,19 +5,38 @@ const AuthContext = createContext(null);
 
 const API = 'http://localhost:8000/api';
 
+const fotoKey = (id) => id ? `userFoto_${id}` : null;
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('user');
     return saved ? JSON.parse(saved) : null;
   });
-  const [foto, setFoto] = useState(() => localStorage.getItem('userFoto') ?? null);
+  const [foto, setFoto] = useState(() => {
+    const saved = localStorage.getItem('user');
+    const u = saved ? JSON.parse(saved) : null;
+    const key = fotoKey(u?.id);
+    return key ? (localStorage.getItem(key) ?? null) : null;
+  });
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const key = fotoKey(user?.id);
+    setFoto(key ? (localStorage.getItem(key) ?? null) : null);
+  }, [user?.id]);
+
   const setFotoUser = (dataUrl) => {
-    if (dataUrl) {
-      localStorage.setItem('userFoto', dataUrl);
-    } else {
-      localStorage.removeItem('userFoto');
+    const saved = localStorage.getItem('user');
+    const currentUser = saved ? JSON.parse(saved) : null;
+    const key = fotoKey(currentUser?.id);
+    if (key) {
+      try {
+        if (dataUrl) {
+          localStorage.setItem(key, dataUrl);
+        } else {
+          localStorage.removeItem(key);
+        }
+      } catch (_) {}
     }
     setFoto(dataUrl);
   };
@@ -42,6 +61,8 @@ export function AuthProvider({ children }) {
     localStorage.setItem('user', JSON.stringify(user));
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     setUser(user);
+    const key = fotoKey(user?.id);
+    setFoto(key ? (localStorage.getItem(key) ?? null) : null);
     return user;
   };
 
@@ -53,6 +74,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('user');
     delete axios.defaults.headers.common['Authorization'];
     setUser(null);
+    setFoto(null);
   };
 
   return (
