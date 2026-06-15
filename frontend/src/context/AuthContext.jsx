@@ -10,7 +10,17 @@ export function AuthProvider({ children }) {
     const saved = localStorage.getItem('user');
     return saved ? JSON.parse(saved) : null;
   });
+  const [foto, setFoto] = useState(() => localStorage.getItem('userFoto') ?? null);
   const [loading, setLoading] = useState(true);
+
+  const setFotoUser = (dataUrl) => {
+    if (dataUrl) {
+      localStorage.setItem('userFoto', dataUrl);
+    } else {
+      localStorage.removeItem('userFoto');
+    }
+    setFoto(dataUrl);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -46,7 +56,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, foto, setFotoUser }}>
       {children}
     </AuthContext.Provider>
   );
