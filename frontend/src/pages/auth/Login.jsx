@@ -64,10 +64,11 @@ export default function Login() {
                 Email
               </label>
               <input
+                className="input validator"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Masukkan email"
+                required placeholder="akun@gmail.com"
                 className="w-full px-5 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-100 focus:border-[#8B4513] text-base"
                 required
               />

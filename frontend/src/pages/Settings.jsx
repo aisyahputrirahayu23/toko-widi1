@@ -12,20 +12,6 @@ import PageHeader from "../components/PageHeader";
 import ConfirmModal from "../components/ConfirmModal";
 import { useAuth } from "../context/AuthContext";
 
-function SectionCard({ icon, title, children }) {
-  return (
-    <div className="bg-white rounded-3xl p-6 shadow-sm">
-      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
-        <div className="w-10 h-10 rounded-xl bg-[#f5ede6] flex items-center justify-center text-xl text-[#8B4513]">
-          {icon}
-        </div>
-        <h2 className="text-lg font-bold text-[#3E2C1C]">{title}</h2>
-      </div>
-      {children}
-    </div>
-  );
-}
-
 function InputField({ label, type = "text", value, onChange, placeholder, disabled }) {
   return (
     <div className="flex flex-col gap-1.5">
@@ -126,9 +112,12 @@ function ProfilSection({ user }) {
   const displayFoto = pendingFoto ?? foto;
 
   return (
-    <SectionCard icon={<MdOutlinePerson />} title="Profil Akun">
+    <>
+      <h3 className="flex items-center gap-2 text-base font-bold text-[#3E2C1C] mb-5">
+        <MdOutlinePerson className="text-xl text-[#8B4513]" /> Profil Akun
+      </h3>
+
       <div className="flex items-center gap-6 mb-6">
-        {/* Avatar + tombol ganti foto */}
         <div className="relative">
           <div className="w-20 h-20 rounded-2xl bg-[#8B4513] flex items-center justify-center text-white text-3xl font-bold shadow-md overflow-hidden">
             {displayFoto
@@ -143,13 +132,7 @@ function ProfilSection({ user }) {
           >
             <MdOutlineCameraAlt className="text-sm" />
           </button>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFotoChange}
-            className="hidden"
-          />
+          <input ref={fileRef} type="file" accept="image/*" onChange={handleFotoChange} className="hidden" />
         </div>
 
         <div>
@@ -158,36 +141,20 @@ function ProfilSection({ user }) {
           <span className="inline-block mt-1 px-3 py-0.5 rounded-full text-xs font-semibold bg-[#f5ede6] text-[#8B4513] capitalize">
             {user?.role ?? "-"}
           </span>
-          <p className="text-xs text-gray-400 mt-2">
-            Klik ikon kamera untuk mengganti foto profil
-          </p>
+          <p className="text-xs text-gray-400 mt-2">Klik ikon kamera untuk mengganti foto profil</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <InputField
-          label="Nama Lengkap"
-          value={nama}
-          onChange={(e) => setNama(e.target.value)}
-          placeholder="Masukkan nama lengkap"
-        />
-        <InputField
-          label="Email"
-          value={user?.email ?? ""}
-          disabled
-          placeholder="Email tidak dapat diubah"
-        />
-        <InputField
-          label="Role"
-          value={user?.role ?? ""}
-          disabled
-        />
+        <InputField label="Nama Lengkap" value={nama} onChange={(e) => setNama(e.target.value)} placeholder="Masukkan nama lengkap" />
+        <InputField label="Email" value={user?.email ?? ""} disabled placeholder="Email tidak dapat diubah" />
+        <InputField label="Role" value={user?.role ?? ""} disabled />
       </div>
 
       <div className="mt-5">
         <SaveButton onClick={handleSave} saved={saved} />
       </div>
-    </SectionCard>
+    </>
   );
 }
 
@@ -202,18 +169,9 @@ function KeamananSection() {
 
   const handleSave = () => {
     setError("");
-    if (!form.lama || !form.baru || !form.konfirmasi) {
-      setError("Semua kolom wajib diisi.");
-      return;
-    }
-    if (form.baru !== form.konfirmasi) {
-      setError("Password baru dan konfirmasi tidak cocok.");
-      return;
-    }
-    if (form.baru.length < 6) {
-      setError("Password baru minimal 6 karakter.");
-      return;
-    }
+    if (!form.lama || !form.baru || !form.konfirmasi) { setError("Semua kolom wajib diisi."); return; }
+    if (form.baru !== form.konfirmasi) { setError("Password baru dan konfirmasi tidak cocok."); return; }
+    if (form.baru.length < 6) { setError("Password baru minimal 6 karakter."); return; }
     setForm({ lama: "", baru: "", konfirmasi: "" });
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
@@ -230,11 +188,7 @@ function KeamananSection() {
           placeholder="••••••••"
           className="w-full px-4 py-2.5 pr-11 rounded-xl border border-gray-200 text-sm text-[#3E2C1C] focus:border-[#8B4513] focus:ring-2 focus:ring-[#8B4513]/10 outline-none transition-all duration-200"
         />
-        <button
-          type="button"
-          onClick={() => toggle(field)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#8B4513] transition-colors"
-        >
+        <button type="button" onClick={() => toggle(field)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#8B4513] transition-colors">
           {show[field] ? <MdOutlineVisibilityOff className="text-lg" /> : <MdOutlineVisibility className="text-lg" />}
         </button>
       </div>
@@ -242,7 +196,11 @@ function KeamananSection() {
   );
 
   return (
-    <SectionCard icon={<MdOutlineLock />} title="Keamanan">
+    <>
+      <h3 className="flex items-center gap-2 text-base font-bold text-[#3E2C1C] mb-5">
+        <MdOutlineLock className="text-xl text-[#8B4513]" /> Keamanan
+      </h3>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <PasswordField field="lama" label="Password Lama" />
         <div />
@@ -250,14 +208,12 @@ function KeamananSection() {
         <PasswordField field="konfirmasi" label="Konfirmasi Password Baru" />
       </div>
 
-      {error && (
-        <p className="mt-3 text-sm text-red-500 font-medium">{error}</p>
-      )}
+      {error && <p className="mt-3 text-sm text-red-500 font-medium">{error}</p>}
 
       <div className="mt-5">
         <SaveButton onClick={handleSave} saved={saved} />
       </div>
-    </SectionCard>
+    </>
   );
 }
 
@@ -274,42 +230,32 @@ function PengaturanTokoSection() {
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
 
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
-  };
-
   return (
-    <SectionCard icon={<MdOutlineStore />} title="Pengaturan Toko">
+    <>
+      <h3 className="flex items-center gap-2 text-base font-bold text-[#3E2C1C] mb-5">
+        <MdOutlineStore className="text-xl text-[#8B4513]" /> Pengaturan Toko
+      </h3>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <InputField label="Nama Toko" value={form.namaToko} onChange={set("namaToko")} placeholder="Nama toko" />
         <InputField label="Nomor Telepon" value={form.telepon} onChange={set("telepon")} placeholder="08xxxxxxxxxx" />
         <InputField label="Email Toko" value={form.email} onChange={set("email")} placeholder="email@toko.com" />
         <div className="flex flex-col gap-1.5 md:col-span-2">
           <label className="text-sm font-medium text-gray-600">Alamat</label>
-          <input
-            value={form.alamat}
-            onChange={set("alamat")}
-            placeholder="Masukkan alamat lengkap"
-            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-[#3E2C1C] focus:border-[#8B4513] focus:ring-2 focus:ring-[#8B4513]/10 outline-none transition-all duration-200"
-          />
+          <input value={form.alamat} onChange={set("alamat")} placeholder="Masukkan alamat lengkap"
+            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-[#3E2C1C] focus:border-[#8B4513] focus:ring-2 focus:ring-[#8B4513]/10 outline-none transition-all duration-200" />
         </div>
         <div className="flex flex-col gap-1.5 md:col-span-2">
           <label className="text-sm font-medium text-gray-600">Deskripsi Toko</label>
-          <textarea
-            rows={3}
-            value={form.deskripsi}
-            onChange={set("deskripsi")}
-            placeholder="Deskripsi singkat toko..."
-            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-[#3E2C1C] focus:border-[#8B4513] focus:ring-2 focus:ring-[#8B4513]/10 outline-none transition-all duration-200 resize-none"
-          />
+          <textarea rows={3} value={form.deskripsi} onChange={set("deskripsi")} placeholder="Deskripsi singkat toko..."
+            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-[#3E2C1C] focus:border-[#8B4513] focus:ring-2 focus:ring-[#8B4513]/10 outline-none transition-all duration-200 resize-none" />
         </div>
       </div>
 
       <div className="mt-5">
-        <SaveButton onClick={handleSave} saved={saved} />
+        <SaveButton onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 2500); }} saved={saved} />
       </div>
-    </SectionCard>
+    </>
   );
 }
 
@@ -322,10 +268,26 @@ export default function Settings() {
     <div id="settings-page" className="space-y-6">
       <PageHeader />
 
-      <ProfilSection user={user} />
-      <KeamananSection />
+      <div className="tabs tabs-lift">
+        <input type="radio" name="settings_tabs" className="tab" aria-label="Profil Akun" defaultChecked />
+        <div className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+          <ProfilSection user={user} />
+        </div>
 
-      {isAdmin && <PengaturanTokoSection />}
+        <input type="radio" name="settings_tabs" className="tab" aria-label="Keamanan" />
+        <div className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+          <KeamananSection />
+        </div>
+
+        {isAdmin && (
+          <>
+            <input type="radio" name="settings_tabs" className="tab" aria-label="Pengaturan Toko" />
+            <div className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+              <PengaturanTokoSection />
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
