@@ -33,24 +33,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-8">
       {/* HEADER */}
-      <div className="flex items-center justify-between">
-        <div>
-          <PageHeader />
-        </div>
-
-        {/* PROFILE */}
-        <div className="flex items-center gap-3 bg-white px-5 py-3 rounded-2xl shadow-sm">
-          <div className="w-12 h-12 rounded-full bg-[#8B4513] flex items-center justify-center text-white font-bold">
-            A
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-[#3E2C1C]">Admin</h3>
-
-            <p className="text-sm text-gray-500">Administrator</p>
-          </div>
-        </div>
-      </div>
+      <PageHeader />
 
       {/* STATS */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">

@@ -51,12 +51,14 @@ export default function Sidebar() {
       {/* MENU */}
       <div className="mt-6 flex-1">
         <ul className="space-y-2">
-          <li>
-            <NavLink to="/dashboard" className={menuClass}>
-              <MdOutlineDashboard className="mr-3 text-xl" />
-              Dashboard
-            </NavLink>
-          </li>
+          {isAdmin && (
+            <li>
+              <NavLink to="/dashboard" className={menuClass}>
+                <MdOutlineDashboard className="mr-3 text-xl" />
+                Dashboard
+              </NavLink>
+            </li>
+          )}
 
           {/* Admin: read-only inventory */}
           {isAdmin && (

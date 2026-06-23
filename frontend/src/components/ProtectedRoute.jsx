@@ -16,7 +16,8 @@ export function RoleRoute({ role, children }) {
 
   if (loading) return <Loading />;
   if (!user) return <Navigate to="/" replace />;
-  if (user.role !== role) return <Navigate to="/dashboard" replace />;
+  const homePage = user.role === "admin" ? "/dashboard" : "/transactions";
+  if (user.role !== role) return <Navigate to={homePage} replace />;
 
   return children;
 }

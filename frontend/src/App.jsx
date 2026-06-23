@@ -28,7 +28,7 @@ function App() {
           <Route element={<MainLayout />}>
             <Route
               path="/dashboard"
-              element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
+              element={<RoleRoute role="admin"><Dashboard /></RoleRoute>}
             />
             <Route
               path="/inventory"
