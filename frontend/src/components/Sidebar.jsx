@@ -34,16 +34,12 @@ export default function Sidebar() {
   return (
     <div className="flex min-h-screen w-72 flex-col bg-white border-r border-gray-200 shadow-sm">
       {/* LOGO */}
-      <div className="px-6 py-8 border-b border-gray-100">
+      <div className="px-6 py-6 border-b border-gray-100">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-full bg-[#8B4513] flex items-center justify-center shadow-md">
-            <img src={logo} alt="Toko Widi" className="w-7 h-7 object-contain" />
-          </div>
+          <img src={logo} alt="Toko Widi" className="w-10 h-10 object-contain" />
           <div>
             <h1 className="text-xl font-bold text-[#4B2E19] leading-none">Toko Widi</h1>
-            <p className="text-xs text-gray-500 mt-1">
-              {isAdmin ? "Administrator" : "Karyawan"}
-            </p>
+            <p className="text-xs text-gray-500 mt-1">{user?.name ?? "-"}</p>
           </div>
         </div>
       </div>
