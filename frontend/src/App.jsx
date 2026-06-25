@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import "./assets/tailwind.css";
 
 import { AuthProvider } from "./context/AuthContext";
+import { ToastProvider } from "./context/ToastContext";
 import { ProtectedRoute, RoleRoute } from "./components/ProtectedRoute";
 import Loading from "./components/Loading";
 import MainLayout from "./layout/MainLayout";
@@ -23,6 +24,7 @@ const Forgot   = React.lazy(() => import("./pages/auth/Forgot"));
 function App() {
   return (
     <AuthProvider>
+      <ToastProvider>
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route element={<MainLayout />}>
@@ -63,6 +65,7 @@ function App() {
           </Route>
         </Routes>
       </Suspense>
+      </ToastProvider>
     </AuthProvider>
   );
 }

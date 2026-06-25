@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import PageHeader from "../components/PageHeader";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 
 const API = "http://localhost:8000/api";
 
@@ -15,6 +16,7 @@ const emptyForm = { name: "", email: "", password: "", role: "karyawan" };
 
 export default function Users() {
   const { user: me } = useAuth();
+  const { showToast } = useToast();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -60,8 +62,10 @@ export default function Users() {
 
       if (editTarget) {
         await axios.put(`${API}/users/${editTarget.id}`, payload);
+        showToast("User berhasil diperbarui");
       } else {
         await axios.post(`${API}/users`, payload);
+        showToast("User berhasil ditambahkan");
       }
       setShowModal(false);
       fetchUsers();
@@ -70,6 +74,7 @@ export default function Users() {
         ? Object.values(err.response.data.errors).flat().join(" ")
         : err.response?.data?.message || "Gagal menyimpan user.";
       setError(msg);
+      showToast(msg, "error");
     } finally {
       setSubmitting(false);
     }
@@ -79,9 +84,10 @@ export default function Users() {
     if (!confirm(`Yakin hapus user "${u.name}"?`)) return;
     try {
       await axios.delete(`${API}/users/${u.id}`);
+      showToast("User berhasil dihapus");
       fetchUsers();
     } catch (err) {
-      alert(err.response?.data?.message || "Gagal menghapus user.");
+      showToast(err.response?.data?.message || "Gagal menghapus user.", "error");
     }
   };
 

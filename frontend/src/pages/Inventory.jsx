@@ -3,12 +3,14 @@ import axios from "axios";
 import PageHeader from "../components/PageHeader";
 import Pagination from "../components/Pagination";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 
 const API = "http://localhost:8000/api";
 const PER_PAGE = 10;
 
 export default function Inventory() {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const isKaryawan = user?.role === "karyawan";
 
   const [products, setProducts] = useState([]);
@@ -63,20 +65,30 @@ export default function Inventory() {
     try {
       if (editTarget) {
         await axios.put(`${API}/products/${editTarget.id}`, form);
+        showToast("Produk berhasil diperbarui");
       } else {
         await axios.post(`${API}/products`, form);
+        showToast("Produk berhasil ditambahkan");
       }
       setShowModal(false);
       fetchProducts();
     } catch (err) {
-      alert(err.response?.data?.message || "Gagal menyimpan produk.");
+      const msg = err.response?.data?.errors
+        ? Object.values(err.response.data.errors).flat().join(" ")
+        : err.response?.data?.message || "Gagal menyimpan produk.";
+      showToast(msg, "error");
     }
   };
 
   const handleDelete = async (id) => {
     if (!confirm("Yakin hapus produk ini?")) return;
-    await axios.delete(`${API}/products/${id}`);
-    fetchProducts();
+    try {
+      await axios.delete(`${API}/products/${id}`);
+      showToast("Produk berhasil dihapus");
+      fetchProducts();
+    } catch (err) {
+      showToast(err.response?.data?.message || "Gagal menghapus produk.", "error");
+    }
   };
 
   return (

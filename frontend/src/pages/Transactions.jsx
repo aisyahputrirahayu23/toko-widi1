@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import PageHeader from "../components/PageHeader";
 import Pagination from "../components/Pagination";
+import { useToast } from "../context/ToastContext";
 
 const API = "http://localhost:8000/api";
 const PER_PAGE = 10;
@@ -9,6 +10,7 @@ const PER_PAGE = 10;
 const PAYMENT_LABELS = { tunai: "Tunai", qris: "QRIS", kartu: "Kartu" };
 
 export default function Transactions() {
+  const { showToast } = useToast();
   const [transactions, setTransactions] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,9 +65,10 @@ export default function Transactions() {
       setItems([{ product_id: "", quantity: 1 }]);
       setNote("");
       setPaymentMethod("tunai");
+      showToast("Transaksi berhasil dibuat");
       fetchAll();
     } catch (err) {
-      alert(err.response?.data?.message || "Transaksi gagal.");
+      showToast(err.response?.data?.message || "Transaksi gagal, periksa data kembali.", "error");
     } finally {
       setSubmitting(false);
     }

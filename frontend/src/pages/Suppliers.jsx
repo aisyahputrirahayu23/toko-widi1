@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import PageHeader from "../components/PageHeader";
 import Pagination from "../components/Pagination";
+import { useToast } from "../context/ToastContext";
 
 const API = "http://localhost:8000/api";
 const PER_PAGE = 10;
 const emptyForm = { name: "", phone: "" };
 
 export default function Suppliers() {
+  const { showToast } = useToast();
   const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -51,8 +53,10 @@ export default function Suppliers() {
     try {
       if (editTarget) {
         await axios.put(`${API}/suppliers/${editTarget.id}`, form);
+        showToast("Supplier berhasil diperbarui");
       } else {
         await axios.post(`${API}/suppliers`, form);
+        showToast("Supplier berhasil ditambahkan");
       }
       setShowModal(false);
       fetchSuppliers();
@@ -61,6 +65,7 @@ export default function Suppliers() {
         ? Object.values(err.response.data.errors).flat().join(" ")
         : err.response?.data?.message || "Gagal menyimpan supplier.";
       setError(msg);
+      showToast(msg, "error");
     } finally {
       setSubmitting(false);
     }
@@ -70,9 +75,10 @@ export default function Suppliers() {
     if (!confirm(`Yakin hapus supplier "${s.name}"?`)) return;
     try {
       await axios.delete(`${API}/suppliers/${s.id}`);
+      showToast("Supplier berhasil dihapus");
       fetchSuppliers();
     } catch (err) {
-      alert(err.response?.data?.message || "Gagal menghapus supplier.");
+      showToast(err.response?.data?.message || "Gagal menghapus supplier.", "error");
     }
   };
 
