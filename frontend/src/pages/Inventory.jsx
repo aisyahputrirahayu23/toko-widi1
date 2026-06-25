@@ -21,6 +21,7 @@ export default function Inventory() {
   const [form, setForm] = useState({ supplier_id: "", name: "", price: "", stock: "", expired_date: "" });
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
 
   const endpoint = isKaryawan ? `${API}/products` : `${API}/inventory`;
 
@@ -91,6 +92,10 @@ export default function Inventory() {
     }
   };
 
+  const filteredProducts = products.filter(item =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="space-y-6">
       <PageHeader />
@@ -107,6 +112,14 @@ export default function Inventory() {
             </button>
           )}
         </div>
+
+        <input
+          type="text"
+          placeholder="Cari berdasarkan nama produk..."
+          value={search}
+          onChange={e => { setSearch(e.target.value); setPage(1); }}
+          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B4513]/30"
+        />
 
         {error && <p className="text-red-500 text-sm">{error}</p>}
 
@@ -128,7 +141,7 @@ export default function Inventory() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {products.slice((page - 1) * PER_PAGE, page * PER_PAGE).map((item) => {
+                {filteredProducts.slice((page - 1) * PER_PAGE, page * PER_PAGE).map((item) => {
                   const isExpired = item.expired_date && new Date(item.expired_date) < new Date(new Date().toDateString());
                   return (
                   <tr key={item.id} className={isExpired ? "bg-red-50 hover:bg-red-100" : "hover:bg-gray-50"}>
@@ -175,16 +188,16 @@ export default function Inventory() {
                   </tr>
                   );
                 })}
-                {products.length === 0 && (
+                {filteredProducts.length === 0 && (
                   <tr>
                     <td colSpan={isKaryawan ? 6 : 5} className="px-4 py-8 text-center text-gray-400 text-sm">
-                      Belum ada produk.
+                      {search ? `Produk "${search}" tidak ditemukan.` : "Belum ada produk."}
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
-            <Pagination page={page} total={products.length} perPage={PER_PAGE} onChange={setPage} />
+            <Pagination page={page} total={filteredProducts.length} perPage={PER_PAGE} onChange={setPage} />
           </div>
         )}
       </div>

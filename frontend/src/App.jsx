@@ -13,6 +13,7 @@ const Dashboard    = React.lazy(() => import("./pages/Dashboard"));
 const Inventory    = React.lazy(() => import("./pages/Inventory"));
 const Reports      = React.lazy(() => import("./pages/Reports"));
 const Transactions = React.lazy(() => import("./pages/Transactions"));
+const Kasir        = React.lazy(() => import("./pages/Kasir"));
 const Users        = React.lazy(() => import("./pages/Users"));
 const Suppliers    = React.lazy(() => import("./pages/Suppliers"));
 const Settings     = React.lazy(() => import("./pages/Settings"));
@@ -47,6 +48,10 @@ function App() {
             <Route
               path="/transactions"
               element={<RoleRoute role="karyawan"><Transactions /></RoleRoute>}
+            />
+            <Route
+              path="/kasir"
+              element={<RoleRoute role="karyawan"><Kasir /></RoleRoute>}
             />
             <Route
               path="/suppliers"

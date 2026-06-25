@@ -18,6 +18,7 @@ export default function Suppliers() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
 
   const fetchSuppliers = async () => {
     try {
@@ -82,6 +83,10 @@ export default function Suppliers() {
     }
   };
 
+  const filteredSuppliers = suppliers.filter(s =>
+    s.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="space-y-6">
       <PageHeader />
@@ -97,6 +102,14 @@ export default function Suppliers() {
           </button>
         </div>
 
+        <input
+          type="text"
+          placeholder="Cari berdasarkan nama..."
+          value={search}
+          onChange={e => { setSearch(e.target.value); setPage(1); }}
+          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B4513]/30"
+        />
+
         {error && !showModal && (
           <p className="text-red-500 text-sm">{error}</p>
         )}
@@ -108,7 +121,7 @@ export default function Suppliers() {
             <table className="min-w-full table-auto">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">#</th>
+
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Nama Supplier</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">No. Telepon</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Jumlah Produk</th>
@@ -116,9 +129,9 @@ export default function Suppliers() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {suppliers.slice((page - 1) * PER_PAGE, page * PER_PAGE).map((s) => (
+                {filteredSuppliers.slice((page - 1) * PER_PAGE, page * PER_PAGE).map((s) => (
                   <tr key={s.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-4 text-sm text-gray-400">{s.id}</td>
+                    
                     <td className="px-4 py-4 text-sm text-gray-800 font-medium">{s.name}</td>
                     <td className="px-4 py-4 text-sm text-gray-600">{s.phone ?? "-"}</td>
                     <td className="px-4 py-4 text-sm text-gray-600">
@@ -144,16 +157,16 @@ export default function Suppliers() {
                     </td>
                   </tr>
                 ))}
-                {suppliers.length === 0 && (
+                {filteredSuppliers.length === 0 && (
                   <tr>
                     <td colSpan={5} className="px-4 py-8 text-center text-gray-400 text-sm">
-                      Belum ada supplier.
+                      {search ? `Supplier "${search}" tidak ditemukan.` : "Belum ada supplier."}
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
-            <Pagination page={page} total={suppliers.length} perPage={PER_PAGE} onChange={setPage} />
+            <Pagination page={page} total={filteredSuppliers.length} perPage={PER_PAGE} onChange={setPage} />
           </div>
         )}
       </div>

@@ -8,6 +8,7 @@ import {
   MdOutlinePeopleAlt,
   MdOutlineSettings,
   MdOutlineLogout,
+  MdOutlinePointOfSale,
 } from "react-icons/md";
 import logo from "../assets/logoo.png";
 import { useAuth } from "../context/AuthContext";
@@ -106,7 +107,17 @@ export default function Sidebar() {
             </li>
           )}
 
-          {/* Karyawan: transaksi */}
+          {/* Karyawan: kasir POS */}
+          {isKaryawan && (
+            <li>
+              <NavLink to="/kasir" className={menuClass}>
+                <MdOutlinePointOfSale className="mr-3 text-xl" />
+                Kasir
+              </NavLink>
+            </li>
+          )}
+
+          {/* Karyawan: riwayat transaksi */}
           {isKaryawan && (
             <li>
               <NavLink to="/transactions" className={menuClass}>

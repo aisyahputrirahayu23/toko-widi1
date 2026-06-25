@@ -6,6 +6,7 @@ const pages = {
   "/inventory":    { title: "Inventory",     subtitle: null },
   "/reports":      { title: "Reports",       subtitle: null },
   "/transactions": { title: "Transaksi",     subtitle: null },
+  "/kasir":        { title: "Kasir",         subtitle: null },
   "/users":        { title: "Kelola User",   subtitle: null },
   "/suppliers":    { title: "Supplier",      subtitle: null },
   "/orders":       { title: "Orders",        subtitle: null },

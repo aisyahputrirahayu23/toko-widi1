@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -35,10 +36,11 @@ class AuthController extends Controller
         return response()->json([
             'token' => $token,
             'user'  => [
-                'id'    => $user->id,
-                'name'  => $user->name,
-                'email' => $user->email,
-                'role'  => $user->role,
+                'id'          => $user->id,
+                'name'        => $user->name,
+                'email'       => $user->email,
+                'role'        => $user->role,
+                'foto_profil' => $user->foto_profil,
             ],
         ]);
     }
@@ -55,10 +57,72 @@ class AuthController extends Controller
         $user = $request->user('api');
 
         return response()->json([
-            'id'    => $user->id,
-            'name'  => $user->name,
-            'email' => $user->email,
-            'role'  => $user->role,
+            'id'          => $user->id,
+            'name'        => $user->name,
+            'email'       => $user->email,
+            'role'        => $user->role,
+            'foto_profil' => $user->foto_profil,
         ]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user('api');
+
+        $request->validate([
+            'name'        => 'sometimes|string|max:255',
+            'email'       => "sometimes|email|max:255|unique:users,email,{$user->id}",
+            'foto_profil' => 'sometimes|nullable|string',
+        ], [
+            'name.max'      => 'Nama maksimal 255 karakter.',
+            'email.email'   => 'Format email tidak valid.',
+            'email.unique'  => 'Email sudah digunakan.',
+        ]);
+
+        $data = [];
+        if ($request->has('name')) {
+            $data['name'] = $request->name;
+        }
+        if ($request->has('email')) {
+            $data['email'] = $request->email;
+        }
+        if ($request->has('foto_profil')) {
+            $data['foto_profil'] = $request->foto_profil;
+        }
+
+        $user->update($data);
+
+        return response()->json([
+            'id'          => $user->id,
+            'name'        => $user->name,
+            'email'       => $user->email,
+            'role'        => $user->role,
+            'foto_profil' => $user->foto_profil,
+        ]);
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'password_lama'     => 'required|string',
+            'password_baru'     => 'required|string|min:6',
+            'konfirmasi'        => 'required|string|same:password_baru',
+        ], [
+            'password_lama.required'  => 'Password lama wajib diisi.',
+            'password_baru.required'  => 'Password baru wajib diisi.',
+            'password_baru.min'       => 'Password baru minimal 6 karakter.',
+            'konfirmasi.required'     => 'Konfirmasi password wajib diisi.',
+            'konfirmasi.same'         => 'Konfirmasi password tidak cocok.',
+        ]);
+
+        $user = $request->user('api');
+
+        if (!Hash::check($request->password_lama, $user->password)) {
+            return response()->json(['message' => 'Password lama tidak sesuai.'], 422);
+        }
+
+        $user->update(['password' => $request->password_baru]);
+
+        return response()->json(['message' => 'Password berhasil diubah.']);
     }
 }

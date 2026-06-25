@@ -126,7 +126,7 @@ export default function Users() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {users.map((u) => (
+                {users.filter((u) => u.role === "karyawan").map((u) => (
                   <tr key={u.id} className="hover:bg-gray-50">
                     <td className="px-4 py-4 text-sm text-gray-400">{u.id}</td>
                     <td className="px-4 py-4 text-sm text-gray-800 font-medium">
@@ -163,10 +163,10 @@ export default function Users() {
                     </td>
                   </tr>
                 ))}
-                {users.length === 0 && (
+                {users.filter((u) => u.role === "karyawan").length === 0 && (
                   <tr>
                     <td colSpan={6} className="px-4 py-8 text-center text-gray-400 text-sm">
-                      Belum ada user.
+                      Belum ada karyawan.
                     </td>
                   </tr>
                 )}
@@ -231,7 +231,6 @@ export default function Users() {
                   className="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-200"
                 >
                   <option value="karyawan">Karyawan</option>
-                  <option value="admin">Admin</option>
                 </select>
               </div>
               <div className="flex gap-3 pt-2">

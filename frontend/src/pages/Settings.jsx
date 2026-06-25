@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 import {
   MdOutlinePerson,
   MdOutlineLock,
-  MdOutlineStore,
   MdOutlineVisibility,
   MdOutlineVisibilityOff,
   MdOutlineCheckCircle,
@@ -32,7 +31,7 @@ function InputField({ label, type = "text", value, onChange, placeholder, disabl
   );
 }
 
-function SaveButton({ onClick, saved }) {
+function SaveButton({ onClick, saved, loading }) {
   const [showConfirm, setShowConfirm] = useState(false);
 
   const handleConfirm = () => {
@@ -45,9 +44,10 @@ function SaveButton({ onClick, saved }) {
       <div className="flex items-center gap-3 mt-2">
         <button
           onClick={() => setShowConfirm(true)}
-          className="px-6 py-2.5 bg-[#8B4513] hover:bg-[#7a3c10] text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+          disabled={loading}
+          className="px-6 py-2.5 bg-[#8B4513] hover:bg-[#7a3c10] text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          Simpan Perubahan
+          {loading ? "Menyimpan..." : "Simpan Perubahan"}
         </button>
         {saved && (
           <span className="flex items-center gap-1.5 text-green-600 text-sm font-medium">
@@ -83,10 +83,13 @@ const compressImage = (dataUrl, maxSize = 200, quality = 0.75) =>
 
 // ─── PROFIL AKUN ────────────────────────────────────────────────────────────
 function ProfilSection({ user }) {
-  const { foto, setFotoUser } = useAuth();
+  const { foto, updateProfile } = useAuth();
   const [nama, setNama] = useState(user?.name ?? "");
+  const [email, setEmail] = useState(user?.email ?? "");
   const [pendingFoto, setPendingFoto] = useState(null);
   const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const fileRef = useRef(null);
 
   const handleFotoChange = (e) => {
@@ -100,13 +103,19 @@ function ProfilSection({ user }) {
     reader.readAsDataURL(file);
   };
 
-  const handleSave = () => {
-    if (pendingFoto) {
-      setFotoUser(pendingFoto);
+  const handleSave = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      await updateProfile(nama, pendingFoto ?? undefined, email);
       setPendingFoto(null);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      setError(err?.response?.data?.message ?? "Gagal menyimpan profil.");
+    } finally {
+      setLoading(false);
     }
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
   };
 
   const displayFoto = pendingFoto ?? foto;
@@ -147,12 +156,14 @@ function ProfilSection({ user }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <InputField label="Nama Lengkap" value={nama} onChange={(e) => setNama(e.target.value)} placeholder="Masukkan nama lengkap" />
-        <InputField label="Email" value={user?.email ?? ""} disabled placeholder="Email tidak dapat diubah" />
+        <InputField label="Email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Masukkan email" />
         <InputField label="Role" value={user?.role ?? ""} disabled />
       </div>
 
+      {error && <p className="mt-3 text-sm text-red-500 font-medium">{error}</p>}
+
       <div className="mt-5">
-        <SaveButton onClick={handleSave} saved={saved} />
+        <SaveButton onClick={handleSave} saved={saved} loading={loading} />
       </div>
     </>
   );
@@ -160,21 +171,32 @@ function ProfilSection({ user }) {
 
 // ─── KEAMANAN (GANTI PASSWORD) ───────────────────────────────────────────────
 function KeamananSection() {
+  const { updatePassword } = useAuth();
   const [form, setForm] = useState({ lama: "", baru: "", konfirmasi: "" });
   const [show, setShow] = useState({ lama: false, baru: false, konfirmasi: false });
   const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const toggle = (field) => setShow((s) => ({ ...s, [field]: !s[field] }));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setError("");
     if (!form.lama || !form.baru || !form.konfirmasi) { setError("Semua kolom wajib diisi."); return; }
     if (form.baru !== form.konfirmasi) { setError("Password baru dan konfirmasi tidak cocok."); return; }
     if (form.baru.length < 6) { setError("Password baru minimal 6 karakter."); return; }
-    setForm({ lama: "", baru: "", konfirmasi: "" });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+
+    setLoading(true);
+    try {
+      await updatePassword(form.lama, form.baru, form.konfirmasi);
+      setForm({ lama: "", baru: "", konfirmasi: "" });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      setError(err?.response?.data?.message ?? "Gagal mengubah password.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const PasswordField = ({ field, label }) => (
@@ -211,49 +233,7 @@ function KeamananSection() {
       {error && <p className="mt-3 text-sm text-red-500 font-medium">{error}</p>}
 
       <div className="mt-5">
-        <SaveButton onClick={handleSave} saved={saved} />
-      </div>
-    </>
-  );
-}
-
-// ─── PENGATURAN TOKO (admin only) ───────────────────────────────────────────
-function PengaturanTokoSection() {
-  const [form, setForm] = useState({
-    namaToko: "Toko Widi",
-    alamat: "Jl. Contoh No. 1, Kota Pekanbaru",
-    telepon: "081234567890",
-    email: "tokiwidi@email.com",
-    deskripsi: "Toko sembako dan kebutuhan sehari-hari.",
-  });
-  const [saved, setSaved] = useState(false);
-
-  const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
-
-  return (
-    <>
-      <h3 className="flex items-center gap-2 text-base font-bold text-[#3E2C1C] mb-5">
-        <MdOutlineStore className="text-xl text-[#8B4513]" /> Pengaturan Toko
-      </h3>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <InputField label="Nama Toko" value={form.namaToko} onChange={set("namaToko")} placeholder="Nama toko" />
-        <InputField label="Nomor Telepon" value={form.telepon} onChange={set("telepon")} placeholder="08xxxxxxxxxx" />
-        <InputField label="Email Toko" value={form.email} onChange={set("email")} placeholder="email@toko.com" />
-        <div className="flex flex-col gap-1.5 md:col-span-2">
-          <label className="text-sm font-medium text-gray-600">Alamat</label>
-          <input value={form.alamat} onChange={set("alamat")} placeholder="Masukkan alamat lengkap"
-            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-[#3E2C1C] focus:border-[#8B4513] focus:ring-2 focus:ring-[#8B4513]/10 outline-none transition-all duration-200" />
-        </div>
-        <div className="flex flex-col gap-1.5 md:col-span-2">
-          <label className="text-sm font-medium text-gray-600">Deskripsi Toko</label>
-          <textarea rows={3} value={form.deskripsi} onChange={set("deskripsi")} placeholder="Deskripsi singkat toko..."
-            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-[#3E2C1C] focus:border-[#8B4513] focus:ring-2 focus:ring-[#8B4513]/10 outline-none transition-all duration-200 resize-none" />
-        </div>
-      </div>
-
-      <div className="mt-5">
-        <SaveButton onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 2500); }} saved={saved} />
+        <SaveButton onClick={handleSave} saved={saved} loading={loading} />
       </div>
     </>
   );
@@ -262,7 +242,6 @@ function PengaturanTokoSection() {
 // ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 export default function Settings() {
   const { user } = useAuth();
-  const isAdmin = user?.role === "admin";
 
   return (
     <div id="settings-page" className="space-y-6">
@@ -278,15 +257,6 @@ export default function Settings() {
         <div className="tab-content bg-base-100 border-base-300 rounded-box p-6">
           <KeamananSection />
         </div>
-
-        {isAdmin && (
-          <>
-            <input type="radio" name="settings_tabs" className="tab" aria-label="Pengaturan Toko" />
-            <div className="tab-content bg-base-100 border-base-300 rounded-box p-6">
-              <PengaturanTokoSection />
-            </div>
-          </>
-        )}
       </div>
     </div>
   );
