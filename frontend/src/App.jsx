@@ -10,7 +10,7 @@ import MainLayout from "./layout/MainLayout";
 import AuthLayout from "./layout/AuthLayout";
 
 const Dashboard    = React.lazy(() => import("./pages/Dashboard"));
-const Inventory    = React.lazy(() => import("./pages/Inventory"));
+const Product      = React.lazy(() => import("./pages/Product"));
 const Reports      = React.lazy(() => import("./pages/Reports"));
 const Transactions = React.lazy(() => import("./pages/Transactions"));
 const Kasir        = React.lazy(() => import("./pages/Kasir"));
@@ -34,8 +34,8 @@ function App() {
               element={<RoleRoute role="admin"><Dashboard /></RoleRoute>}
             />
             <Route
-              path="/inventory"
-              element={<ProtectedRoute><Inventory /></ProtectedRoute>}
+              path="/product"
+              element={<ProtectedRoute><Product /></ProtectedRoute>}
             />
             <Route
               path="/reports"

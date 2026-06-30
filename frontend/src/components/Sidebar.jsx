@@ -60,9 +60,9 @@ export default function Sidebar() {
           {/* Admin: read-only inventory */}
           {isAdmin && (
             <li>
-              <NavLink to="/inventory" className={menuClass}>
+              <NavLink to="/product" className={menuClass}>
                 <MdOutlineInventory2 className="mr-3 text-xl" />
-                Inventory
+                Product
               </NavLink>
             </li>
           )}
@@ -90,9 +90,9 @@ export default function Sidebar() {
           {/* Karyawan: inventory dengan CRUD */}
           {isKaryawan && (
             <li>
-              <NavLink to="/inventory" className={menuClass}>
+              <NavLink to="/product" className={menuClass}>
                 <MdOutlineInventory2 className="mr-3 text-xl" />
-                Inventory
+                Product
               </NavLink>
             </li>
           )}
