@@ -26,6 +26,7 @@ class ReportController extends Controller
 
         $totalPendapatan = $transactions->sum('total_price');
         $jumlahTransaksi = $transactions->count();
+        $rataRataTransaksi = $jumlahTransaksi > 0 ? round($totalPendapatan / $jumlahTransaksi) : 0;
 
         $produkTerlaris = TransactionItem::with('product')
             ->selectRaw('product_id, SUM(quantity) as total_qty, SUM(quantity * price_per_unit) as total_revenue')
@@ -42,11 +43,12 @@ class ReportController extends Controller
             ->get();
 
         return response()->json([
-            'total_pendapatan'  => $totalPendapatan,
-            'jumlah_transaksi'  => $jumlahTransaksi,
-            'produk_terlaris'   => $produkTerlaris,
-            'grafik_per_hari'   => $perHari,
-            'transaksi'         => $transactions,
+            'total_pendapatan'      => $totalPendapatan,
+            'jumlah_transaksi'      => $jumlahTransaksi,
+            'rata_rata_transaksi'   => $rataRataTransaksi,
+            'produk_terlaris'       => $produkTerlaris, 
+            'grafik_per_hari'       => $perHari,
+            'transaksi'             => $transactions,
         ]);
     }
 }

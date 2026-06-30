@@ -133,9 +133,7 @@ export default function Reports() {
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <p className="text-xs text-gray-500 mb-1">Rata-rata per Transaksi</p>
               <p className="text-2xl font-bold text-gray-800">
-                Rp {data?.jumlah_transaksi
-                  ? Number(Math.round(data.total_pendapatan / data.jumlah_transaksi)).toLocaleString("id-ID")
-                  : "0"}
+                Rp {Number(data?.rata_rata_transaksi ?? 0).toLocaleString("id-ID")}
               </p>
             </div>
           </div>

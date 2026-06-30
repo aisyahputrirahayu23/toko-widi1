@@ -170,7 +170,7 @@ export default function Dashboard() {
     },
     {
       title: "Total Karyawan",
-      value: loading ? "—" : users.length,
+      value: loading ? "—" : users.filter(u => u.role === "karyawan").length,
       desc: "Pengguna aktif",
       icon: <MdOutlinePeopleAlt className="text-2xl" />,
       color: "text-warning",
