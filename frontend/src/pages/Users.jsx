@@ -117,7 +117,6 @@ export default function Users() {
             <table className="min-w-full table-auto">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">#</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Nama</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Email</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Role</th>
@@ -128,7 +127,6 @@ export default function Users() {
               <tbody className="divide-y divide-gray-100">
                 {users.filter((u) => u.role === "karyawan").map((u) => (
                   <tr key={u.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-4 text-sm text-gray-400">{u.id}</td>
                     <td className="px-4 py-4 text-sm text-gray-800 font-medium">
                       {u.name}
                       {u.id === me?.id && (

@@ -205,7 +205,6 @@ export default function Reports() {
                 <table className="min-w-full table-auto">
                   <thead>
                     <tr className="border-b border-gray-100">
-                      <th className="pb-2 text-left text-xs font-medium text-gray-400">#</th>
                       <th className="pb-2 text-left text-xs font-medium text-gray-400">Tanggal</th>
                       <th className="pb-2 text-left text-xs font-medium text-gray-400">Karyawan</th>
                       <th className="pb-2 text-left text-xs font-medium text-gray-400">Produk</th>
@@ -216,7 +215,6 @@ export default function Reports() {
                   <tbody className="divide-y divide-gray-50">
                     {data?.transaksi?.slice((transaksiPage - 1) * PER_PAGE, transaksiPage * PER_PAGE).map((tx) => (
                       <tr key={tx.id} className="hover:bg-gray-50">
-                        <td className="py-3 text-sm text-gray-400">#{tx.id}</td>
                         <td className="py-3 text-sm text-gray-700">
                           {new Date(tx.created_at).toLocaleDateString("id-ID")}
                         </td>
