@@ -33,11 +33,10 @@ export default function Transactions() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-1 p-6">
       <PageHeader />
 
-      <div className="p-6 bg-white space-y-6">
-        <h2 className="text-xl font-semibold text-gray-800">Riwayat Transaksi</h2>
+      <div className="bg-white rounded-2xl shadow-sm border border-base-200 p-6 space-y-6">
 
         {loading ? (
           <p className="text-gray-400 text-sm">Memuat data...</p>

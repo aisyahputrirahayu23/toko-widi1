@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logoo.png";
 import { useAuth } from "../../context/AuthContext";
+import SuccessModal from "../../components/SuccessModal";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -17,10 +19,12 @@ export default function Login() {
     setLoading(true);
     try {
       const loggedUser = await login(email, password);
-      navigate(loggedUser.role === "admin" ? "/dashboard" : "/transactions");
+      setShowSuccess(true);
+      setTimeout(() => {
+        navigate(loggedUser.role === "admin" ? "/dashboard" : "/kasir");
+      }, 1000);
     } catch (err) {
       setError(err.response?.data?.message || "Login gagal, coba lagi.");
-    } finally {
       setLoading(false);
     }
   };
@@ -93,9 +97,6 @@ export default function Login() {
                 <input type="checkbox" />
                 Remember me
               </label>
-              <a href="/forgot" className="font-semibold text-[#8B4513] hover:underline">
-                Forgot password
-              </a>
             </div>
 
             <button
@@ -107,14 +108,10 @@ export default function Login() {
             </button>
           </form>
 
-          <p className="mt-8 text-base text-slate-500 text-center">
-            Don't have an account?{" "}
-            <a href="/register" className="font-bold text-[#8B4513] hover:underline">
-              Sign up
-            </a>
-          </p>
         </div>
       </div>
+
+      <SuccessModal isOpen={showSuccess} message="Login berhasil" />
     </div>
   );
 }

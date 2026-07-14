@@ -5,7 +5,7 @@ const pages = {
   "/dashboard":    { title: "Dashboard",     subtitle: null },
   "/product":      { title: "Product",       subtitle: null },
   "/reports":      { title: "Reports",       subtitle: null },
-  "/transactions": { title: "Transaksi",     subtitle: null },
+  "/transactions": { title: "Riwayat Transaksi",     subtitle: null },
   "/kasir":        { title: "Kasir",         subtitle: null },
   "/users":        { title: "Kelola User",   subtitle: null },
   "/suppliers":    { title: "Supplier",      subtitle: null },
@@ -24,13 +24,11 @@ export default function PageHeader() {
     <div className="flex items-center justify-between p-4">
       <div className="flex flex-col">
         <span className="text-3xl font-semibold">{page.title}</span>
-        <div className="flex items-center font-medium space-x-2 mt-2">
-          {pathname === "/dashboard" ? (
+        {pathname === "/dashboard" && (
+          <div className="flex items-center font-medium space-x-2 mt-2">
             <span className="text-gray-500">Welcome back, {user?.name ?? "Admin"} 👋</span>
-          ) : (
-            <span className="text-gray-500">Toko Widi / {page.title}</span>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

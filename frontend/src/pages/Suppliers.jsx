@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import PageHeader from "../components/PageHeader";
 import Pagination from "../components/Pagination";
+import ConfirmModal from "../components/ConfirmModal";
 import { useToast } from "../context/ToastContext";
 
 const API = "http://localhost:8000/api";
@@ -19,6 +20,7 @@ export default function Suppliers() {
   const [submitting, setSubmitting] = useState(false);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const fetchSuppliers = async () => {
     try {
@@ -72,14 +74,16 @@ export default function Suppliers() {
     }
   };
 
-  const handleDelete = async (s) => {
-    if (!confirm(`Yakin hapus supplier "${s.name}"?`)) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await axios.delete(`${API}/suppliers/${s.id}`);
+      await axios.delete(`${API}/suppliers/${deleteTarget.id}`);
       showToast("Supplier berhasil dihapus");
       fetchSuppliers();
     } catch (err) {
       showToast(err.response?.data?.message || "Gagal menghapus supplier.", "error");
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -88,27 +92,26 @@ export default function Suppliers() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-1 p-6">
       <PageHeader />
 
-      <div className="p-6 bg-white space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-gray-800">Supplier</h2>
+      <div className="bg-white rounded-2xl shadow-sm border border-base-200 p-6 space-y-6">
+        <div className="flex gap-3 items-center">
+          <input
+            type="text"
+            placeholder="Cari berdasarkan nama..."
+            value={search}
+            onChange={e => { setSearch(e.target.value); setPage(1); }}
+            className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B4513]/30"
+          />
+          
           <button
             onClick={openAdd}
-            className="bg-orange-700 hover:bg-orange-950 text-white px-4 py-2 rounded-md text-sm font-medium"
+            className="bg-orange-700 hover:bg-orange-950 text-white px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap"
           >
             + Tambah Supplier
           </button>
         </div>
-
-        <input
-          type="text"
-          placeholder="Cari berdasarkan nama..."
-          value={search}
-          onChange={e => { setSearch(e.target.value); setPage(1); }}
-          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B4513]/30"
-        />
 
         {error && !showModal && (
           <p className="text-red-500 text-sm">{error}</p>
@@ -148,7 +151,7 @@ export default function Suppliers() {
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDelete(s)}
+                          onClick={() => setDeleteTarget(s)}
                           className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-medium"
                         >
                           Hapus
@@ -227,6 +230,13 @@ export default function Suppliers() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        message={`Yakin hapus supplier "${deleteTarget?.name}"?`}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

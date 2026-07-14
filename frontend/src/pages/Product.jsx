@@ -2,11 +2,22 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import PageHeader from "../components/PageHeader";
 import Pagination from "../components/Pagination";
+import ConfirmModal from "../components/ConfirmModal";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 
 const API = "http://localhost:8000/api";
 const PER_PAGE = 10;
+
+function getExpiryStatus(expiredDate) {
+  if (!expiredDate) return null;
+  const today = new Date(new Date().toDateString());
+  const expiry = new Date(expiredDate);
+  const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+  if (diffDays < 0) return "expired";
+  if (diffDays <= 7) return "soon";
+  return "ok";
+}
 
 export default function Product() {
   const { user } = useAuth();
@@ -22,6 +33,9 @@ export default function Product() {
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [expiredOnly, setExpiredOnly] = useState(false);
+  const [soonOnly, setSoonOnly] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const endpoint = isKaryawan ? `${API}/products` : `${API}/inventory`;
 
@@ -81,45 +95,73 @@ export default function Product() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm("Yakin hapus produk ini?")) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await axios.delete(`${API}/products/${id}`);
+      await axios.delete(`${API}/products/${deleteTarget.id}`);
       showToast("Produk berhasil dihapus");
       fetchProducts();
     } catch (err) {
       showToast(err.response?.data?.message || "Gagal menghapus produk.", "error");
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
-  const filteredProducts = products.filter(item =>
-    item.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredProducts = products.filter(item => {
+    const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
+    const status = getExpiryStatus(item.expired_date);
+    if (expiredOnly) return matchesSearch && status === "expired";
+    if (soonOnly) return matchesSearch && status === "soon";
+    return matchesSearch;
+  });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-1 p-6">
       <PageHeader />
 
-      <div className="p-6 space-y-6 bg-white">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Produk</h2>
+      <div className="bg-white rounded-2xl shadow-sm border border-base-200 p-6 space-y-6">
+
+        <div className="flex gap-3 items-center">
+          <input
+            type="text"
+            placeholder="Cari berdasarkan nama produk..."
+            value={search}
+            onChange={e => { setSearch(e.target.value); setPage(1); }}
+            className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B4513]/30"
+          />
+          <button
+            type="button"
+            onClick={() => { setExpiredOnly(v => !v); setSoonOnly(false); setPage(1); }}
+            className={
+              expiredOnly
+                ? "px-4 py-2.5 rounded-xl text-sm font-medium bg-red-600 text-white hover:bg-red-700"
+                : "px-4 py-2.5 rounded-xl text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-50"
+            }
+          >
+            ⚠ Produk Expired
+          </button>
+          <button
+            type="button"
+            onClick={() => { setSoonOnly(v => !v); setExpiredOnly(false); setPage(1); }}
+            className={
+              soonOnly
+                ? "px-4 py-2.5 rounded-xl text-sm font-medium bg-yellow-500 text-white hover:bg-yellow-600"
+                : "px-4 py-2.5 rounded-xl text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-50"
+            }
+          >
+            ⏳ Segera Expired (7 Hari)
+          </button>
+
           {isKaryawan && (
-            <button
-              onClick={openAdd}
-              className="bg-orange-700 hover:bg-orange-950 text-white px-4 py-2 rounded-md text-sm font-medium"
-            >
-              + Add Product
-            </button>
+          <button
+            onClick={openAdd}
+            className="bg-orange-700 hover:bg-orange-950 text-white px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap"
+          >
+            + Add Product
+          </button>
           )}
         </div>
-
-        <input
-          type="text"
-          placeholder="Cari berdasarkan nama produk..."
-          value={search}
-          onChange={e => { setSearch(e.target.value); setPage(1); }}
-          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B4513]/30"
-        />
 
         {error && <p className="text-red-500 text-sm">{error}</p>}
 
@@ -142,9 +184,13 @@ export default function Product() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {filteredProducts.slice((page - 1) * PER_PAGE, page * PER_PAGE).map((item) => {
-                  const isExpired = item.expired_date && new Date(item.expired_date) < new Date(new Date().toDateString());
+                  const status = getExpiryStatus(item.expired_date);
+                  const rowClass =
+                    status === "expired" ? "bg-red-50 hover:bg-red-100"
+                    : status === "soon" ? "bg-yellow-50 hover:bg-yellow-100"
+                    : "hover:bg-gray-50";
                   return (
-                  <tr key={item.id} className={isExpired ? "bg-red-50 hover:bg-red-100" : "hover:bg-gray-50"}>
+                  <tr key={item.id} className={rowClass}>
                     <td className="px-4 py-4 text-sm text-gray-700">{item.name}</td>
                     <td className="px-4 py-4 text-sm text-gray-700">Rp {Number(item.price).toLocaleString("id-ID")}</td>
                     <td className="px-4 py-4 text-sm text-gray-700">{item.supplier?.name ?? "-"}</td>
@@ -161,9 +207,14 @@ export default function Product() {
                     </td>
                     <td className="px-4 py-4 text-sm">
                       {item.expired_date ? (
-                        <span className={isExpired ? "px-2 py-1 rounded-full text-xs font-semibold bg-red-200 text-red-800" : "text-gray-700"}>
+                        <span className={
+                          status === "expired" ? "px-2 py-1 rounded-full text-xs font-semibold bg-red-200 text-red-800"
+                          : status === "soon" ? "px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800"
+                          : "text-gray-700"
+                        }>
                           {item.expired_date}
-                          {isExpired && " ⚠ Expired"}
+                          {status === "expired" && " ⚠ Expired"}
+                          {status === "soon" && " ⚠ Segera Expired"}
                         </span>
                       ) : "-"}
                     </td>
@@ -177,7 +228,7 @@ export default function Product() {
                             Edit
                           </button>
                           <button
-                            onClick={() => handleDelete(item.id)}
+                            onClick={() => setDeleteTarget(item)}
                             className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-medium"
                           >
                             Delete
@@ -191,7 +242,13 @@ export default function Product() {
                 {filteredProducts.length === 0 && (
                   <tr>
                     <td colSpan={isKaryawan ? 6 : 5} className="px-4 py-8 text-center text-gray-400 text-sm">
-                      {search ? `Produk "${search}" tidak ditemukan.` : "Belum ada produk."}
+                      {search
+                        ? `Produk "${search}" tidak ditemukan.`
+                        : expiredOnly
+                        ? "Tidak ada produk yang expired."
+                        : soonOnly
+                        ? "Tidak ada produk yang segera expired."
+                        : "Belum ada produk."}
                     </td>
                   </tr>
                 )}
@@ -286,6 +343,13 @@ export default function Product() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        message={`Yakin hapus produk "${deleteTarget?.name}"?`}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

@@ -19,8 +19,6 @@ const Suppliers    = React.lazy(() => import("./pages/Suppliers"));
 const Settings     = React.lazy(() => import("./pages/Settings"));
 
 const Login    = React.lazy(() => import("./pages/auth/Login"));
-const Register = React.lazy(() => import("./pages/auth/Register"));
-const Forgot   = React.lazy(() => import("./pages/auth/Forgot"));
 
 function App() {
   return (
@@ -65,8 +63,6 @@ function App() {
 
           <Route element={<AuthLayout />}>
             <Route path="/" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot" element={<Forgot />} />
           </Route>
         </Routes>
       </Suspense>

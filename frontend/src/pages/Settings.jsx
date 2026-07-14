@@ -244,17 +244,17 @@ export default function Settings() {
   const { user } = useAuth();
 
   return (
-    <div id="settings-page" className="space-y-6">
+    <div id="settings-page" className="space-y-1 p-6">
       <PageHeader />
 
       <div className="tabs tabs-lift">
         <input type="radio" name="settings_tabs" className="tab" aria-label="Profil Akun" defaultChecked />
-        <div className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+        <div className="tab-content bg-white shadow-sm border border-base-200 rounded-box p-6">
           <ProfilSection user={user} />
         </div>
 
         <input type="radio" name="settings_tabs" className="tab" aria-label="Keamanan" />
-        <div className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+        <div className="tab-content bg-white shadow-sm border border-base-200 rounded-box p-6">
           <KeamananSection />
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import PageHeader from "../components/PageHeader";
+import ConfirmModal from "../components/ConfirmModal";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 
@@ -24,6 +25,7 @@ export default function Users() {
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const fetchUsers = async () => {
     try {
@@ -80,24 +82,25 @@ export default function Users() {
     }
   };
 
-  const handleDelete = async (u) => {
-    if (!confirm(`Yakin hapus user "${u.name}"?`)) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await axios.delete(`${API}/users/${u.id}`);
+      await axios.delete(`${API}/users/${deleteTarget.id}`);
       showToast("User berhasil dihapus");
       fetchUsers();
     } catch (err) {
       showToast(err.response?.data?.message || "Gagal menghapus user.", "error");
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-1 p-6">
       <PageHeader />
 
-      <div className="p-6 bg-white space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-gray-800">Kelola User</h2>
+      <div className="bg-white rounded-2xl shadow-sm border border-base-200 p-6 space-y-6">
+        <div className="flex justify-end items-center">
           <button
             onClick={openAdd}
             className="bg-orange-700 hover:bg-orange-950 text-white px-4 py-2 rounded-md text-sm font-medium"
@@ -151,7 +154,7 @@ export default function Users() {
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDelete(u)}
+                          onClick={() => setDeleteTarget(u)}
                           disabled={u.id === me?.id}
                           className="bg-red-500 hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed text-white px-3 py-1 rounded text-xs font-medium"
                         >
@@ -251,6 +254,13 @@ export default function Users() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        message={`Yakin hapus user "${deleteTarget?.name}"?`}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }
